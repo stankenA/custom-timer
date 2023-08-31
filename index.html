@@ -9,18 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
   <title>Custom Timer</title>
+  <script type="module" src="./script.js"></script>
 </head>
 
 <body class="page">
   <main class="main">
-    <section class="timer">
-      <span class="timer__value">
-        11:22:33
-      </span>
-      <button type="button" class="timer__btn">Start</button>
-      <button type="button" class="timer__btn">Pause</button>
-      <button type="button" class="timer__btn">Reset</button>
-    </section>
+    <h1 class="title">
+      Custom Timer
+    </h1>
+    <timer-view class="timer" seconds="7202"></timer-view>
   </main>
 </body>
 
