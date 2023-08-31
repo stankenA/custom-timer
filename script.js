@@ -24,7 +24,7 @@ class TimerElement extends HTMLElement {
     this.addEventListener('starttimer', this._startTimer);
     this.addEventListener('pausetimer', this._stopTimer);
     this.addEventListener('resettimer', this._resetTimer);
-    this.addEventListener('endtimer', this._stopTimer);
+    this.addEventListener('endtimer', this._endTimer);
 
     this._isTimerStarted = false;
   }
@@ -116,11 +116,10 @@ class TimerElement extends HTMLElement {
 
   // Отрендерить зачение таймера
   _renderTimeValue() {
-    if (this._hours) {
-      this._timerValue.textContent = `${this._hours}:${this._minutes > 9 ? '' : '0'}${this._minutes}:${this._seconds > 9 ? '' : '0'}${this._seconds}`;
-    } else {
-      this._timerValue.textContent = `${this._minutes > 9 ? '' : '0'}${this._minutes}:${this._seconds > 9 ? '' : '0'}${this._seconds}`;
-    }
+    const hoursTxt = `${this._hours ? this._hours + ':' : ''}`;
+    const minutesTxt = `${this._minutes > 9 ? '' : '0'}${this._minutes}:`;
+    const secondsTxt = `${this._seconds > 9 ? '' : '0'}${this._seconds}`;
+    this._timerValue.textContent = hoursTxt + minutesTxt + secondsTxt;
   }
 
   // Вычислить параметры таймера при указании атрибута "seconds"
@@ -154,11 +153,14 @@ class TimerElement extends HTMLElement {
       targetSeconds = Number(timeStringArr[1]);
     }
 
-    const secondsDiff = (targetHours * 3600 + targetMinutes * 60 + targetSeconds) - (currHours * 3600 + currMinuntes * 60 + currSeconds);
-    this._initialToTimeValue = secondsDiff;
+    let essentialSeconds = (targetHours * 3600 + targetMinutes * 60 + targetSeconds) - (currHours * 3600 + currMinuntes * 60 + currSeconds);
+    this._initialToTimeValue = essentialSeconds;
 
-    if (secondsDiff > 0) {
-      this._setSecondsTime(secondsDiff);
+    if (essentialSeconds > 0) {
+      this._setSecondsTime(essentialSeconds);
+    } else {
+      essentialSeconds = 86400 - (-essentialSeconds);
+      this._setSecondsTime(essentialSeconds);
     }
   }
 
@@ -199,8 +201,17 @@ class TimerElement extends HTMLElement {
   _resetTimer() {
     this._stopTimer();
 
+    this._pauseBtn.classList.remove('timer__btn_inactive');
+    this._pauseBtn.removeAttribute('disabled');
+
     this._secondsValue = this._initialSecondsValue;
     this._checkTimerType();
+  }
+
+  _endTimer() {
+    this._stopTimer();
+    this._pauseBtn.classList.add('timer__btn_inactive');
+    this._pauseBtn.setAttribute('disabled', 'true');
   }
 
   // Проверить, какой атрибут таймера используется
